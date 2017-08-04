@@ -64,6 +64,7 @@ public class Controller extends UnicastRemoteObject implements IController {
         System.out.println("Adicionando servidores e serviços...");
         String[] serv = texto.split(";");
         for (String servidor : serv) {
+            System.out.println("SERVIDORES: "+servidor);
             novoServidor(servidor);
         }
 //        System.out.println("Todos servidores foram adicionados.");
