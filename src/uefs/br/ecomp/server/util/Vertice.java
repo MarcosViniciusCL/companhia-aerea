@@ -5,13 +5,16 @@
  */
 package uefs.br.ecomp.server.util;
 
+import java.io.Serializable;
+
 /**
  *
  * @author User
  */
-public class Vertice {
+public class Vertice implements Serializable{
      private final String nome;
     private int id, grau, x, y;   //Coordenada (x,y) para os vértices na interface.
+    private boolean visitado;
 
     /** Construtor da classe, o campo nome é atribuído e, id e grau são inicializados.
      * 
@@ -21,8 +24,16 @@ public class Vertice {
         this.nome = nome;
         this.id = 0;
         this.grau = 0;
+        this.visitado = false;
     }
     
+    public boolean isVisitado(){
+        return this.visitado;
+    }
+    
+    public void setVisitado(boolean visit){
+        this.visitado = visit;
+    }
     /** Método que retorna o nome do vértice.
      *
      * @return nome String
@@ -54,6 +65,8 @@ public class Vertice {
     public int getGrau() {
         return grau;
     }
+    
+    
 
     /** Método que altera o grau do vértice.
      *
@@ -117,4 +130,5 @@ public class Vertice {
     public String toString() {
         return nome;
     }
+
 }

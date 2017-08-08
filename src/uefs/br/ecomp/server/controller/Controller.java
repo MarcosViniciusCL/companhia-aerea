@@ -15,8 +15,10 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import uefs.br.ecomp.server.exception.DadoInexistenteException;
 import uefs.br.ecomp.server.model.Arquivo;
 import uefs.br.ecomp.server.model.Help;
 import uefs.br.ecomp.server.model.IController;
@@ -53,7 +55,7 @@ public class Controller extends UnicastRemoteObject implements IController {
         try {
             IController cont = (IController) Naming.lookup("rmi://" + rmi);
             this.servidores.add(cont);
-            cont.carregarTrechos();
+//            cont.carregarTrechos();
             System.out.println("Adicionado: " + str[0] + "\nServiço: " + str[1]);
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             System.err.println("ERRO, NÃO ADICIONADO.\nServidor:" + str[0] + "\nServiço: " + str[1] + "\n"
@@ -146,8 +148,14 @@ public class Controller extends UnicastRemoteObject implements IController {
      * @return List - Retorna uma lista de possiveis caminhos.
      */
     @Override
-    public List<ArrayList> obterCaminho(String origem, String destino) {
-        gerarGrafo();
+    public List<Stack> obterCaminho(String origem, String destino) {
+        
+        try {
+            gerarGrafo();
+            return this.grafo.buscarCaminhos(origem, destino);
+        } catch (DadoInexistenteException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return null;
     }
 

@@ -9,6 +9,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Stack;
 import uefs.br.ecomp.server.model.IController;
 
 /**
@@ -21,9 +23,10 @@ public class ControllerClient {
 
     public void conectarServidor(String endereco) throws NotBoundException, MalformedURLException, RemoteException {
         this.servidor = (IController) Naming.lookup("rmi://" + endereco);
+        this.servidor.carregarDados();
     }
 
-    public void obterCaminho(String cidOrigem, String cidDestino) throws RemoteException {
-        servidor.obterCaminho(cidOrigem, cidDestino);
+    public List<Stack> obterCaminho(String cidOrigem, String cidDestino) throws RemoteException {
+        return servidor.obterCaminho(cidOrigem, cidDestino);
     }
 }

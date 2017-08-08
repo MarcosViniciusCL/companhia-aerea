@@ -7,8 +7,8 @@ package uefs.br.ecomp.server.model;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  *
@@ -20,7 +20,7 @@ public interface IController extends Remote{
     
     public List<Trecho> getTrechoDisponivel() throws RemoteException;
     
-    public List<ArrayList> obterCaminho(String origem, String destino) throws RemoteException;
+    public List<Stack> obterCaminho(String origem, String destino) throws RemoteException;
 
     public void carregarDados() throws RemoteException;
    

@@ -8,6 +8,8 @@ package uefs.br.ecomp.server.view;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uefs.br.ecomp.client.controller.ControllerClient;
@@ -22,7 +24,11 @@ public class MainClient {
         try {
             cc.conectarServidor("192.168.0.105/ControllerService");
             System.out.println("Conectado.");
-            cc.obterCaminho("A", "B");
+            List<Stack> ls = cc.obterCaminho("A", "D");
+            for (Stack l : ls) {
+                System.out.println("Caminho: "+l.toString());
+            }
+            
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             Logger.getLogger(MainClient.class.getName()).log(Level.SEVERE, null, ex);
         }
