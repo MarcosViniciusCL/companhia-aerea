@@ -5,7 +5,9 @@
  */
 package uefs.br.ecomp.server.controller;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -68,6 +70,7 @@ public class Controller extends UnicastRemoteObject implements IController {
      */
     @Override
     public void carregarServidores() {
+        this.servidores.clear();
         String texto;
         Arquivo arq = new Arquivo();
         System.out.println("Lendo arquivo de servidores...");
@@ -88,6 +91,7 @@ public class Controller extends UnicastRemoteObject implements IController {
      */
     @Override
     public void carregarTrechos() {
+        this.trechos.clear();
         String texto;
         Arquivo arq = new Arquivo();
         System.out.println("Carregando arquivo de trechos...");
@@ -119,6 +123,7 @@ public class Controller extends UnicastRemoteObject implements IController {
 
     @Override
     public List<Trecho> getTrechoDisponivel() {
+        this.carregarTrechos();
         return trechos;
     }
 
@@ -130,12 +135,12 @@ public class Controller extends UnicastRemoteObject implements IController {
     public void iniciarServico(String nomeServico) {
         try {
             System.out.println("iniciando serviço...");
-            System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+            System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
             LocateRegistry.createRegistry(1099);
             IController c = new Controller();
             Naming.bind(nomeServico, (Remote) c);
             System.out.println("serviço \"" + nomeServico + "\" iniciado.");
-        } catch (RemoteException | AlreadyBoundException | MalformedURLException ex) {
+        } catch (RemoteException | AlreadyBoundException | MalformedURLException | UnknownHostException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -162,6 +167,11 @@ public class Controller extends UnicastRemoteObject implements IController {
     private void gerarGrafo() {
         List<Trecho> listTrechos = new ArrayList<>();
         List<Trecho> obj;
+        
+        for (Trecho trecho : this.trechos) {
+            listTrechos.add(trecho);
+        }
+        
         for (IController servidor : this.servidores) {
             try {
                 obj = servidor.getTrechoDisponivel(); //O servidor retorna os seus trechos disponiveis.
@@ -212,6 +222,11 @@ public class Controller extends UnicastRemoteObject implements IController {
     public void carregarDados() throws RemoteException {
         this.carregarServidores();
         this.carregarTrechos();
+    }
+
+    @Override
+    public void comprarPassagem(Stack pilha) throws RemoteException {
+        
     }
 
 }

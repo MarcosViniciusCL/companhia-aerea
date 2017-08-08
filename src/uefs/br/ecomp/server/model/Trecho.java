@@ -15,16 +15,16 @@ import java.util.List;
  * @author marcos
  */
 public class Trecho implements Serializable{
-    private String cidOrigem;
-    private String cidDestino;
-    private String compania;
+    private String origem;
+    private String destino;
+    private String companhia;
     private List<Passagem> passagem;
     private int distancia;
 
     public Trecho(String cidOrigem, String cidDestino, String compania) {
-        this.cidOrigem = cidOrigem;
-        this.cidDestino = cidDestino;
-        this.compania = compania;
+        this.origem = cidOrigem;
+        this.destino = cidDestino;
+        this.companhia = compania;
         this.passagem = new ArrayList<>();
     }
     
@@ -40,23 +40,23 @@ public class Trecho implements Serializable{
 
     @Override
     public String toString(){
-        return cidOrigem+"->"+cidDestino;
+        return origem+"->"+destino;
     }
     
     public String getCidOrigem() {
-        return cidOrigem;
+        return origem;
     }
 
     public void setCidOrigem(String cidOrigem) {
-        this.cidOrigem = cidOrigem;
+        this.origem = cidOrigem;
     }
 
     public String getCidDestino() {
-        return cidDestino;
+        return destino;
     }
 
     public void setCidDestino(String cidDestino) {
-        this.cidDestino = cidDestino;
+        this.destino = cidDestino;
     }
 
     public int getDistancia() {
@@ -64,11 +64,11 @@ public class Trecho implements Serializable{
     }
 
     public String getCompania() {
-        return compania;
+        return companhia;
     }
 
     public void setCompania(String compania) {
-        this.compania = compania;
+        this.companhia = compania;
     }
 
     public List<Passagem> getPassagem() {
