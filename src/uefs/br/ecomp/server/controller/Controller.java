@@ -21,6 +21,8 @@ import uefs.br.ecomp.server.model.Arquivo;
 import uefs.br.ecomp.server.model.Help;
 import uefs.br.ecomp.server.model.IController;
 import uefs.br.ecomp.server.model.Trecho;
+import uefs.br.ecomp.server.util.Grafo;
+import uefs.br.ecomp.server.util.Vertice;
 
 /**
  *
@@ -28,35 +30,42 @@ import uefs.br.ecomp.server.model.Trecho;
  */
 public class Controller extends UnicastRemoteObject implements IController {
 
+    private static Controller controller;
+
     private final List<IController> servidores;
     private final List<Trecho> trechos;
-    
-    public Controller() throws RemoteException{
+    private Grafo grafo;
+
+    private Controller() throws RemoteException {
         super();
-        servidores = new ArrayList<>();
+        this.servidores = new ArrayList<>();
         this.trechos = new ArrayList<>();
+        this.grafo = null;
     }
 
     /**
      * Adiciona um novo servidor RMI servidor RMI;
-     * @param rmi 
+     *
+     * @param rmi
      */
     public void novoServidor(String rmi) {
         String[] str = rmi.split("/");
         try {
             IController cont = (IController) Naming.lookup("rmi://" + rmi);
-            servidores.add(cont);
-            System.out.println("Adicionado: "+str[0]+"\nServiço: "+str[1]);
+            this.servidores.add(cont);
+            cont.carregarTrechos();
+            System.out.println("Adicionado: " + str[0] + "\nServiço: " + str[1]);
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-            System.err.println("ERRO, NÃO ADICIONADO.\nServidor:"+str[0]+"\nServiço: "+str[1]+"\n"
+            System.err.println("ERRO, NÃO ADICIONADO.\nServidor:" + str[0] + "\nServiço: " + str[1] + "\n"
                     + "verifique se o servidor/serviço está disponivel.");
         }
     }
-    
+
     /**
      * Carregado o arquivo servidores.conf, nele está os servidores RMI.
      */
-    public void carregarServidores(){
+    @Override
+    public void carregarServidores() {
         String texto;
         Arquivo arq = new Arquivo();
         System.out.println("Lendo arquivo de servidores...");
@@ -64,39 +73,40 @@ public class Controller extends UnicastRemoteObject implements IController {
         System.out.println("Adicionando servidores e serviços...");
         String[] serv = texto.split(";");
         for (String servidor : serv) {
-            System.out.println("SERVIDORES: "+servidor);
+            System.out.println("SERVIDOR: " + servidor);
             novoServidor(servidor);
         }
 //        System.out.println("Todos servidores foram adicionados.");
         Help.sleep(1000);
-        carregarTrechos(); //Carrega os trechos após os servidores;
+//        carregarTrechos(); //Carrega os trechos após os servidores;
     }
-    
+
     /**
      * Carrega os trechos que estão no arquivo trechos.conf.
      */
-    public void carregarTrechos(){
+    @Override
+    public void carregarTrechos() {
         String texto;
         Arquivo arq = new Arquivo();
         System.out.println("Carregando arquivo de trechos...");
         texto = arq.ler("trechos.conf");
         System.out.println("Adicionando trechos ao servidor...");
-        String[] trechos = texto.split(";");
-        for (String trecho : trechos) {
+        String[] auxTrechos = texto.split(";");
+        for (String trecho : auxTrechos) {
             String[] aux = trecho.split(":");
             Trecho aux2 = new Trecho(aux[0], aux[1], "companhia X");
             this.trechos.add(aux2);
-            System.out.println(aux[0]+"<->"+aux[1]);
+            System.out.println(aux[0] + "<->" + aux[1]);
         }
         System.out.println("Todos os trechos foram adicionados.");
     }
-    
+
     /**
      * Solicita a todos os servidores seus trechos.
      */
-    public void obterTrechosServidore(){
-        
-        for (IController servidor : servidores) {
+    public void obterTrechosServidore() {
+
+        for (IController servidor : this.servidores) {
             try {
                 servidor.getTrechoDisponivel();
             } catch (RemoteException ex) {
@@ -122,9 +132,78 @@ public class Controller extends UnicastRemoteObject implements IController {
             LocateRegistry.createRegistry(1099);
             IController c = new Controller();
             Naming.bind(nomeServico, (Remote) c);
-            System.out.println("serviço \""+nomeServico+"\" iniciado.");
+            System.out.println("serviço \"" + nomeServico + "\" iniciado.");
         } catch (RemoteException | AlreadyBoundException | MalformedURLException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    /**
+     * Metodo usado pelo cliente para solicitar o caminho para o servidor.
+     *
+     * @param origem - Cidade de origem da viagem.
+     * @param destino - Cideda destino da viagem
+     * @return List - Retorna uma lista de possiveis caminhos.
+     */
+    @Override
+    public List<ArrayList> obterCaminho(String origem, String destino) {
+        gerarGrafo();
+        return null;
+    }
+
+    private void gerarGrafo() {
+        List<Trecho> listTrechos = new ArrayList<>();
+        List<Trecho> obj;
+        for (IController servidor : this.servidores) {
+            try {
+                obj = servidor.getTrechoDisponivel(); //O servidor retorna os seus trechos disponiveis.
+                for (Trecho trecho : obj) {
+                    listTrechos.add(trecho);
+                }
+            } catch (RemoteException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        //Gerando lista com os nomes das cidades.
+        List<String> nomesCidades = new ArrayList<>();
+        for (Trecho trecho : listTrechos) {
+            String cidade1 = trecho.getCidOrigem();
+            String cidade2 = trecho.getCidDestino();
+            if (!nomesCidades.contains(cidade1)) {
+                nomesCidades.add(cidade1);
+            }
+            if (!nomesCidades.contains(cidade2)) {
+                nomesCidades.add(cidade2);
+            }
+        }
+
+        //Criando o grafo
+        this.grafo = new Grafo();
+        for (String cidade : nomesCidades) { //Adicionando vertices no grafo
+            this.grafo.inserirVertice(cidade);
+        }
+        for (Trecho trecho : listTrechos) { //adicionando arestas.
+            this.grafo.inserirAresta(new Vertice(trecho.getCidOrigem()), new Vertice(trecho.getCidDestino()), 5);
+        }
+
+    }
+    
+    public static Controller getInstance() {
+        if (Controller.controller == null) {
+            try {
+                Controller.controller = new Controller();
+            } catch (RemoteException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return Controller.controller;
+    }
+
+    @Override
+    public void carregarDados() throws RemoteException {
+        this.carregarServidores();
+        this.carregarTrechos();
+    }
+
 }

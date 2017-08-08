@@ -5,6 +5,7 @@
  */
 package uefs.br.ecomp.server.model;
 
+import java.io.Serializable;
 import uefs.br.ecomp.server.exception.ReservaExcedidaException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author marcos
  */
-public class Trecho {
+public class Trecho implements Serializable{
     private String cidOrigem;
     private String cidDestino;
     private String compania;

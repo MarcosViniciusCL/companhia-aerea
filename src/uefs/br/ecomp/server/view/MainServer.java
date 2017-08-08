@@ -12,10 +12,10 @@ import uefs.br.ecomp.server.controller.Controller;
  *
  * @author marcos
  */
-public class Main {
+public class MainServer {
     public static void main(String[] args) throws RemoteException{
-        Controller c = new Controller();
-//        c.iniciarServico("ControllerService");
+        Controller c = Controller.getInstance();
+        c.iniciarServico("ControllerService");
         c.carregarServidores();
     }
 }

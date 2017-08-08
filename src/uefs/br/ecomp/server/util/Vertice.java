@@ -9,7 +9,7 @@ package uefs.br.ecomp.server.util;
  *
  * @author User
  */
-class Vertice {
+public class Vertice {
      private final String nome;
     private int id, grau, x, y;   //Coordenada (x,y) para os vértices na interface.
 
