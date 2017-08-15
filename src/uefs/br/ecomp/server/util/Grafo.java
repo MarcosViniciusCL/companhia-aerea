@@ -499,6 +499,10 @@ public class Grafo implements IGrafo {
         }
         return caminhos;
     }
+    
+//    public List<Stack> buscarCaminhosTrechos(String origemNome, String destinoNome) throws DadoInexistenteException {
+//        
+//    }
 
     /**
      * Retorna um vizinho não visitado do nó

@@ -5,7 +5,9 @@
  */
 package uefs.br.ecomp.server.view;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -25,6 +27,7 @@ public class MainServer {
         Controller c = Controller.getInstance();
         IController rmi = null;
         while (true) {
+            System.out.println("IP: "+MainServer.getEnderecoIP());
             System.out.println("1 - Iniciar Serviço\n2 - Carregar Servidores\n3 - Carregar Trechos\n4 - SAIR");
             String resp = new Scanner(System.in).next();
             switch (resp) {
@@ -55,6 +58,15 @@ public class MainServer {
         try {
             return (IController) Naming.lookup("rmi://localhost:1099/ControllerService");
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
+            Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public static String getEnderecoIP() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
             Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

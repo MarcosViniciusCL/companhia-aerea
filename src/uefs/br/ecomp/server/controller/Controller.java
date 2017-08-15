@@ -14,6 +14,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,12 +136,14 @@ public class Controller extends UnicastRemoteObject implements IController {
     public void iniciarServico(String nomeServico) {
         try {
             System.out.println("iniciando serviço...");
-            System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
-            LocateRegistry.createRegistry(1099);
+//            System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+            Registry reg = LocateRegistry.createRegistry(1099);
+//            Registry reg = LocateRegistry.getRegistry();
             IController c = new Controller();
-            Naming.bind(nomeServico, (Remote) c);
+//            reg.rebind("127.0.0.1:3333"+nomeServico, c);
+            Naming.bind(nomeServico, c);
             System.out.println("serviço \"" + nomeServico + "\" iniciado.");
-        } catch (RemoteException | AlreadyBoundException | MalformedURLException | UnknownHostException ex) {
+        } catch (RemoteException | MalformedURLException | AlreadyBoundException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -225,7 +228,7 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     @Override
-    public void comprarPassagem(Stack pilha) throws RemoteException {
+    public void comprarTrechos(Stack pilha) throws RemoteException {
         
     }
 

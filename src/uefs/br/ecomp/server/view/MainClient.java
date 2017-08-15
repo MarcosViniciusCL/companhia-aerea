@@ -22,9 +22,9 @@ public class MainClient {
     public static void main(String[] args){
         ControllerClient cc = new ControllerClient();
         try {
-            cc.conectarServidor("192.168.0.105/ControllerService");
+            cc.conectarServidor("192.168.0.103:1099/ControllerService");
             System.out.println("Conectado.");
-            List<Stack> ls = cc.obterCaminho("A", "D");
+            List<Stack> ls = cc.obterCaminho("G", "I");
             for (Stack l : ls) {
                 System.out.println("Caminho: "+l.toString());
             }

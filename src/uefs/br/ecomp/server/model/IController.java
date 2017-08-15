@@ -28,5 +28,5 @@ public interface IController extends Remote{
     
     public void carregarTrechos() throws RemoteException;
     
-    public void comprarPassagem(Stack pilha) throws RemoteException;
+    public void comprarTrechos(Stack pilha) throws RemoteException;
 }
