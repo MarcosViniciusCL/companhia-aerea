@@ -26,6 +26,7 @@ import uefs.br.ecomp.server.model.Arquivo;
 import uefs.br.ecomp.server.model.Help;
 import uefs.br.ecomp.server.model.IController;
 import uefs.br.ecomp.server.model.Trecho;
+import uefs.br.ecomp.server.util.Aresta;
 import uefs.br.ecomp.server.util.Grafo;
 import uefs.br.ecomp.server.util.Vertice;
 
@@ -136,11 +137,8 @@ public class Controller extends UnicastRemoteObject implements IController {
     public void iniciarServico(String nomeServico) {
         try {
             System.out.println("iniciando serviço...");
-//            System.setProperty("java.rmi.server.hostname", "127.0.0.1");
             Registry reg = LocateRegistry.createRegistry(1099);
-//            Registry reg = LocateRegistry.getRegistry();
             IController c = new Controller();
-//            reg.rebind("127.0.0.1:3333"+nomeServico, c);
             Naming.bind(nomeServico, c);
             System.out.println("serviço \"" + nomeServico + "\" iniciado.");
         } catch (RemoteException | MalformedURLException | AlreadyBoundException ex) {
@@ -157,7 +155,7 @@ public class Controller extends UnicastRemoteObject implements IController {
      */
     @Override
     public List<Stack> obterCaminho(String origem, String destino) {
-        
+
         try {
             gerarGrafo();
             return this.grafo.buscarCaminhos(origem, destino);
@@ -170,11 +168,11 @@ public class Controller extends UnicastRemoteObject implements IController {
     private void gerarGrafo() {
         List<Trecho> listTrechos = new ArrayList<>();
         List<Trecho> obj;
-        
+
         for (Trecho trecho : this.trechos) {
             listTrechos.add(trecho);
         }
-        
+
         for (IController servidor : this.servidores) {
             try {
                 obj = servidor.getTrechoDisponivel(); //O servidor retorna os seus trechos disponiveis.
@@ -209,7 +207,7 @@ public class Controller extends UnicastRemoteObject implements IController {
         }
 
     }
-    
+
     public static Controller getInstance() {
         if (Controller.controller == null) {
             try {
@@ -229,7 +227,16 @@ public class Controller extends UnicastRemoteObject implements IController {
 
     @Override
     public void comprarTrechos(Stack pilha) throws RemoteException {
-        
+        try {
+            List<Aresta> tc = new ArrayList<>();
+            Vertice[] v = (Vertice[]) pilha.toArray();
+            int i = 0, j = i + 1;
+            for (int k = 0; k < v.length; k++) {
+                tc.add(this.grafo.buscarAresta(v[i], v[j]));
+            }
+        } catch (DadoInexistenteException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

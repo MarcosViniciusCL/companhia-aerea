@@ -9,7 +9,7 @@ package uefs.br.ecomp.server.util;
  *
  * @author User
  */
-class Aresta {
+public class Aresta {
           
     private final Vertice origem;
     private final Vertice destino;
