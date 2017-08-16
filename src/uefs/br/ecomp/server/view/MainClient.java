@@ -13,6 +13,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uefs.br.ecomp.client.controller.ControllerClient;
+import uefs.br.ecomp.server.model.Passagem;
 
 /**
  *
@@ -22,12 +23,14 @@ public class MainClient {
     public static void main(String[] args){
         ControllerClient cc = new ControllerClient();
         try {
-            cc.conectarServidor("172.16.103.107:1099/ControllerService");
+            cc.conectarServidor("172.16.103.109:1099/ControllerService");
             System.out.println("Conectado.");
-            List<Stack> ls = cc.obterCaminho("A", "G");
+            List<Stack> ls = cc.obterCaminho("A", "C");
             for (Stack l : ls) {
                 System.out.println("Caminho: "+l.toString());
             }
+            Passagem pa = cc.comprarPassagem(ls.get(0));
+            System.out.println(pa);
             
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             Logger.getLogger(MainClient.class.getName()).log(Level.SEVERE, null, ex);

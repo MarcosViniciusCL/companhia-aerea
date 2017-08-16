@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Stack;
 import uefs.br.ecomp.server.model.IController;
+import uefs.br.ecomp.server.model.Passagem;
+import uefs.br.ecomp.server.util.Vertice;
 
 /**
  *
@@ -27,5 +29,9 @@ public class ControllerClient {
 
     public List<Stack> obterCaminho(String cidOrigem, String cidDestino) throws RemoteException {
         return servidor.obterCaminho(cidOrigem, cidDestino);
+    }
+    
+    public Passagem comprarPassagem(Stack<Vertice> pilha) throws RemoteException{
+        return this.servidor.comprarTrechos(pilha);
     }
 }

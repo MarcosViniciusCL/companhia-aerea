@@ -5,6 +5,7 @@
  */
 package uefs.br.ecomp.server.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -13,7 +14,7 @@ import java.util.Stack;
  *
  * @author marcos
  */
-public class Passagem {
+public class Passagem implements Serializable{
     private int id;
     private String nomeComprador;
     private List<Trecho> trechoParaComprar;
@@ -26,7 +27,15 @@ public class Passagem {
         this.trechoParaComprar = trechos;
     }
 
-    
+    @Override
+    public String toString(){
+        String str = "";
+        System.out.println(this.trechoComprados);
+        for (Trecho trecho : this.trechoComprados) {
+            str += trecho.getCidOrigem() +"->";
+        }
+        return this.nomeComprador + ":" + str;
+    }
     public int getId() {
         return id;
     }

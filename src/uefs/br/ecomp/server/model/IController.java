@@ -9,6 +9,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Stack;
+import uefs.br.ecomp.server.util.Vertice;
 
 /**
  *
@@ -28,5 +29,5 @@ public interface IController extends Remote{
     
     public void carregarTrechos() throws RemoteException;
     
-    public void comprarTrechos(Stack pilha) throws RemoteException;
+    public Passagem comprarTrechos(Stack<Vertice> pilha) throws RemoteException;
 }

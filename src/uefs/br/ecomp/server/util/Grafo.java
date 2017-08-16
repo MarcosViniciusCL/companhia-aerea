@@ -189,16 +189,12 @@ public class Grafo implements IGrafo {
     @Override
     public void inserirAresta(Vertice origem, Vertice destino, double peso) {
 
-        try {
-            this.buscarAresta(origem, destino);
-
-        } catch (DadoInexistenteException ex) {
+        if (this.buscarAresta(origem, destino) == null) {
             listaAresta.add(new Aresta(origem, destino, peso));
             //Grau é qualquer ligação, tanto de entrada como de saída:
             origem.setGrau(origem.getGrau() + 1);
             destino.setGrau(destino.getGrau() + 1);
         }
-
     }
 
     /**
@@ -228,7 +224,7 @@ public class Grafo implements IGrafo {
      * @throws DadoInexistenteException
      */
     @Override
-    public Aresta buscarAresta(Vertice origem, Vertice destino) throws DadoInexistenteException {
+    public Aresta buscarAresta(Vertice origem, Vertice destino) {
         Iterator<Aresta> it = this.listarArestas();
 
         while (it.hasNext()) {
@@ -499,11 +495,10 @@ public class Grafo implements IGrafo {
         }
         return caminhos;
     }
-    
+
 //    public List<Stack> buscarCaminhosTrechos(String origemNome, String destinoNome) throws DadoInexistenteException {
 //        
 //    }
-
     /**
      * Retorna um vizinho não visitado do nó
      *

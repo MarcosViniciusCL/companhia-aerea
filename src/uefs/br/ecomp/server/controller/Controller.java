@@ -241,7 +241,7 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     @Override
-    public void comprarTrechos(Stack pilha) throws RemoteException {
+    public Passagem comprarTrechos(Stack<Vertice> pilha) throws RemoteException {
         List<Trecho> tc = obterTrechos(pilha); //Converte a pilha de vertices em trechos;
         Passagem pas = new Passagem("Comprador", tc);
         if(trechoLocal(tc)){
@@ -250,26 +250,33 @@ public class Controller extends UnicastRemoteObject implements IController {
         for (IController servidor : this.servidores) {
             pas = servidor.comprarTrechoServer(pas);
         }
+        return pas;
     }
 
-    private List<Trecho> obterTrechos(Stack pilha) {
-        try {
-            List<Trecho> tc = new ArrayList<>();
-            Vertice[] v = (Vertice[]) pilha.toArray();
-            int i = 0, j = i + 1;
-            Aresta obj;
-            for (int k = 0; k < v.length; k++) {
-                obj = this.grafo.buscarAresta(v[i], v[j]);
-                if (obj != null) {
-                    Trecho trecho = new Trecho(obj.getOrigem().getNome(), obj.getDestino().getNome(), "");
-                    tc.add(trecho);
-                }
+    private List<Trecho> obterTrechos(Stack<Vertice> pilha) {
+        List<Trecho> tc = new ArrayList<>();
+        Vertice[] v = pilhaParaVetor(pilha);
+        int i = 0, j = i + 1;
+        Aresta obj;
+        for (int k = 0; k < v.length; k++) {
+            obj = this.grafo.buscarAresta(v[i], v[j]);
+            if (obj != null) {
+                Trecho trecho = new Trecho(obj.getOrigem().getNome(), obj.getDestino().getNome(), "");
+                tc.add(trecho);
             }
-            return tc;
-        } catch (DadoInexistenteException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            i++;
+            j++;
         }
-        return null;
+        return tc;
+    }
+    
+    private Vertice[] pilhaParaVetor(Stack<Vertice> pilha){
+        int tamanho = pilha.size();
+        Vertice[] v = new Vertice[tamanho];
+        for (int i = 0; i < tamanho; i++) {
+            v[i] = pilha.pop();
+        }
+        return v;
     }
 
     private boolean trechoLocal(List<Trecho> la) {
