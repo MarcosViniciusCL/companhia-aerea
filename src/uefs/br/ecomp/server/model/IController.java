@@ -16,7 +16,7 @@ import java.util.Stack;
  */
 public interface IController extends Remote{
     
-    public String comprarTrechoServer(Passagem passagem) throws RemoteException;
+    public Passagem comprarTrechoServer(Passagem passagem) throws RemoteException;
     
     public List<Trecho> getTrechoDisponivel() throws RemoteException;
     

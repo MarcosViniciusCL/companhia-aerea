@@ -135,8 +135,18 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     @Override
-    public String comprarTrechoServer(Passagem passagem) {
-        return "Não implementado";
+    public Passagem comprarTrechoServer(Passagem passagem) {
+        if (passagem.rotaComprada()) {
+            return passagem;
+        }
+        if (trechoLocal(passagem.getTrechoParaComprar())) {
+            try {
+                marcarTrechos(passagem);
+            } catch (ReservaExcedidaException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return passagem;
     }
 
     public void iniciarServico(String nomeServico) {
@@ -234,10 +244,11 @@ public class Controller extends UnicastRemoteObject implements IController {
     public void comprarTrechos(Stack pilha) throws RemoteException {
         List<Trecho> tc = obterTrechos(pilha); //Converte a pilha de vertices em trechos;
         Passagem pas = new Passagem("Comprador", tc);
-        if (trechoLocal(tc) < 0) {
-
-        } else {
-
+        if(trechoLocal(tc)){
+            comprarTrechoServer(pas);
+        }
+        for (IController servidor : this.servidores) {
+            pas = servidor.comprarTrechoServer(pas);
         }
     }
 
@@ -261,8 +272,14 @@ public class Controller extends UnicastRemoteObject implements IController {
         return null;
     }
 
-    private int trechoLocal(List<Trecho> la) {
-        return this.trechos.indexOf(la);
+    private boolean trechoLocal(List<Trecho> la) {
+        for (Trecho trecho : la) {
+            if (this.trechos.contains(trecho)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     private boolean marcarTrechos(Passagem ps) throws ReservaExcedidaException {
