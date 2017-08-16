@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package uefs.br.ecomp.client.model;
+package uefs.br.ecomp.client.view;
 
 /**
  *
@@ -39,7 +39,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/uefs/br/ecomp/client/model/logovoamais.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/uefs/br/ecomp/client/view/logovoamais.png"))); // NOI18N
         jLabel1.setText("jLabel1");
 
         jLabel2.setText("Sua Origem");
