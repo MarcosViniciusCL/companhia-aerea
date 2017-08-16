@@ -13,17 +13,17 @@ import java.util.Stack;
  *
  * @author marcos
  */
-class Passagem {
+public class Passagem {
     private int id;
     private String nomeComprador;
     private List<Trecho> trechoParaComprar;
     private List<Trecho> trechoComprados;
 
-    public Passagem(String nomeComprador, Stack trechos) {
+    public Passagem(String nomeComprador, List<Trecho> trechos) {
         this.id = 0;
         this.nomeComprador = nomeComprador;
         this.trechoComprados = new ArrayList<>();
-  //      this.trechoParaComprar = gerarList(trechos);
+        this.trechoParaComprar = trechos;
     }
 
     
@@ -42,13 +42,19 @@ class Passagem {
     public void setNomeComprador(String nomeComprador) {
         this.nomeComprador = nomeComprador;
     }
+    
+    public void trechoResevado(Trecho tc){
+        this.trechoParaComprar.remove(tc);
+        this.trechoComprados.add(tc);
+    }
+    
+    public boolean rotaComprada(){
+        return this.trechoParaComprar.isEmpty();
+    }
 
-//    private List<Trecho> gerarList(Stack<Trecho> trechos) {
-//        List<Trecho> array = new ArrayList<>();
-//        for (Trecho trecho : trechos) {
-//            array.add(trecho);
-//        }
-//    }
+    public List<Trecho> getTrechoParaComprar() {
+        return trechoParaComprar;
+    }
     
     
 }

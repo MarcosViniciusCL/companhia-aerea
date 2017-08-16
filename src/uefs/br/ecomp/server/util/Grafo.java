@@ -238,7 +238,7 @@ public class Grafo implements IGrafo {
                 return a;
             }
         }
-        throw new DadoInexistenteException("Aresta inexistente!");
+        return null;
     }
 
     /**

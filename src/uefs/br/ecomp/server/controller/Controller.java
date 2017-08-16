@@ -22,13 +22,16 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uefs.br.ecomp.server.exception.DadoInexistenteException;
+import uefs.br.ecomp.server.exception.ReservaExcedidaException;
 import uefs.br.ecomp.server.model.Arquivo;
 import uefs.br.ecomp.server.model.Help;
 import uefs.br.ecomp.server.model.IController;
+import uefs.br.ecomp.server.model.Passagem;
 import uefs.br.ecomp.server.model.Trecho;
 import uefs.br.ecomp.server.util.Aresta;
 import uefs.br.ecomp.server.util.Grafo;
 import uefs.br.ecomp.server.util.Vertice;
+import uefs.br.ecomp.server.view.MainServer;
 
 /**
  *
@@ -37,6 +40,7 @@ import uefs.br.ecomp.server.util.Vertice;
 public class Controller extends UnicastRemoteObject implements IController {
 
     private static Controller controller;
+    private String meuEndereco;
 
     private final List<IController> servidores;
     private final List<Trecho> trechos;
@@ -47,6 +51,7 @@ public class Controller extends UnicastRemoteObject implements IController {
         this.servidores = new ArrayList<>();
         this.trechos = new ArrayList<>();
         this.grafo = null;
+        this.meuEndereco = this.getEnderecoIP();
     }
 
     /**
@@ -130,7 +135,7 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     @Override
-    public String buscarTrecho(String destino) {
+    public String comprarTrechoServer(Passagem passagem) {
         return "Não implementado";
     }
 
@@ -142,7 +147,7 @@ public class Controller extends UnicastRemoteObject implements IController {
             Naming.bind(nomeServico, c);
             System.out.println("serviço \"" + nomeServico + "\" iniciado.");
         } catch (RemoteException | MalformedURLException | AlreadyBoundException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Não foi possivel iniciar.");
         }
     }
 
@@ -227,16 +232,61 @@ public class Controller extends UnicastRemoteObject implements IController {
 
     @Override
     public void comprarTrechos(Stack pilha) throws RemoteException {
+        List<Trecho> tc = obterTrechos(pilha); //Converte a pilha de vertices em trechos;
+        Passagem pas = new Passagem("Comprador", tc);
+        if (trechoLocal(tc) < 0) {
+
+        } else {
+
+        }
+    }
+
+    private List<Trecho> obterTrechos(Stack pilha) {
         try {
-            List<Aresta> tc = new ArrayList<>();
+            List<Trecho> tc = new ArrayList<>();
             Vertice[] v = (Vertice[]) pilha.toArray();
             int i = 0, j = i + 1;
+            Aresta obj;
             for (int k = 0; k < v.length; k++) {
-                tc.add(this.grafo.buscarAresta(v[i], v[j]));
+                obj = this.grafo.buscarAresta(v[i], v[j]);
+                if (obj != null) {
+                    Trecho trecho = new Trecho(obj.getOrigem().getNome(), obj.getDestino().getNome(), "");
+                    tc.add(trecho);
+                }
             }
+            return tc;
         } catch (DadoInexistenteException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
+    }
+
+    private int trechoLocal(List<Trecho> la) {
+        return this.trechos.indexOf(la);
+    }
+
+    private boolean marcarTrechos(Passagem ps) throws ReservaExcedidaException {
+        List<Trecho> la = ps.getTrechoParaComprar();
+        int index;
+        Trecho tc;
+        for (Trecho trecho : la) {
+            index = this.trechos.indexOf(la);
+            if (index > -1) {
+                tc = this.trechos.get(index);
+                tc.resevarTrecho(ps);
+                ps.trechoResevado(tc);
+            }
+        }
+        return true;
+    }
+
+    public String getEnderecoIP() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
 }
