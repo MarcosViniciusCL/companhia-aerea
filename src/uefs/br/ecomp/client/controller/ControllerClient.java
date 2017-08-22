@@ -24,7 +24,7 @@ public class ControllerClient {
     private IController servidor;
 
     public void conectarServidor(String endereco) throws NotBoundException, MalformedURLException, RemoteException {
-        this.servidor = (IController) Naming.lookup("rmi://" + endereco);
+        this.servidor = (IController) Naming.lookup("rmi://" + endereco+":1099/ControllerService");
     }
 
     public List<Stack> obterCaminho(String cidOrigem, String cidDestino) throws RemoteException {

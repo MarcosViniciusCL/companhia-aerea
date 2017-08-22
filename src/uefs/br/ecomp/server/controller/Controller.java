@@ -305,6 +305,7 @@ public class Controller extends UnicastRemoteObject implements IController {
         List<Trecho> lc = ps.getTrechoComprados();
         for (Trecho trecho : lc) {
             la.remove(trecho);
+            this.trechos.remove(trecho);
         }
 
         return true;

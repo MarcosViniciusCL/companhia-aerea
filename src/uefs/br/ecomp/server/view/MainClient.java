@@ -24,7 +24,7 @@ public class MainClient {
     public static void main(String[] args){
         ControllerClient cc = new ControllerClient();
         try {
-            cc.conectarServidor("127.0.0.1:1099/ControllerService");
+            cc.conectarServidor("172.16.103.108:1099/ControllerService");
             System.out.println("Conectado.");
             List<Stack> ls = cc.obterCaminho("A", "D");
             for (Stack l : ls) {

@@ -5,13 +5,18 @@
  */
 package uefs.br.ecomp.client.view;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import uefs.br.ecomp.client.controller.ControllerClient;
+import uefs.br.ecomp.server.model.Passagem;
+import uefs.br.ecomp.server.util.Vertice;
 
 /**
  *
@@ -20,13 +25,17 @@ import uefs.br.ecomp.client.controller.ControllerClient;
 public class TelaPrincipal extends javax.swing.JFrame {
 
     private ControllerClient controller;
+    private List<Stack> aux = new ArrayList();
 
     /**
      * Creates new form TelaPrincipal
      */
-    public TelaPrincipal() {
+    public TelaPrincipal() throws NotBoundException, MalformedURLException, RemoteException {
         initComponents();
         controller = new ControllerClient();
+        controller.conectarServidor(JOptionPane.showInputDialog("Informe o Servidor"));
+        
+
     }
 
     /**
@@ -45,7 +54,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jComboBox1Origem = new javax.swing.JComboBox();
         jComboBoxDestino = new javax.swing.JComboBox();
-        jComboBox3 = new javax.swing.JComboBox();
+        lista = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -67,8 +76,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 jComboBoxDestinoItemStateChanged(evt);
             }
         });
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton1.setFont(new java.awt.Font("Agency FB", 0, 24)); // NOI18N
         jButton1.setText("Comprar");
@@ -105,7 +112,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jComboBoxDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(26, 26, 26)
-                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lista, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -125,9 +132,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGap(39, 39, 39)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox1Origem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33))
         );
@@ -154,12 +161,25 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        try {
+            int s =  lista.getSelectedIndex();
+            Passagem p = controller.comprarPassagem(aux.get(s));
+            System.out.println("Trechos comprados: "+p.getTrechoComprados().size());
+        } catch (RemoteException ex) {
+            Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBoxDestinoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxDestinoItemStateChanged
+       
         try {
-            List<Stack> ls = controller.obterCaminho((String) this.jComboBox1Origem.getSelectedItem(), (String) this.jComboBoxDestino.getSelectedItem());
+            
+            aux = controller.obterCaminho((String) this.jComboBox1Origem.getSelectedItem(), (String) this.jComboBoxDestino.getSelectedItem());
+            System.out.println("Tamanho: "+aux.get(0).size());
+            for (Stack l : aux) {
+                System.out.println("Caminho: "+l.toString());
+                lista.addItem(l.toString());
+            }
         } catch (RemoteException ex) {
             JOptionPane.showMessageDialog(null, "Erro na comunicação.");
         }
@@ -195,7 +215,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaPrincipal().setVisible(true);
+                try {
+                    new TelaPrincipal().setVisible(true);
+                } catch (NotBoundException ex) {
+                    Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -203,12 +231,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1Origem;
-    private javax.swing.JComboBox jComboBox3;
     private javax.swing.JComboBox jComboBoxDestino;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JComboBox lista;
     // End of variables declaration//GEN-END:variables
 }
