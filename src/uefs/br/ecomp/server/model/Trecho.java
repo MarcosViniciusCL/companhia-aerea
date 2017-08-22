@@ -9,6 +9,7 @@ import java.io.Serializable;
 import uefs.br.ecomp.server.exception.ReservaExcedidaException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -41,6 +42,23 @@ public class Trecho implements Serializable{
     @Override
     public String toString(){
         return origem+"->"+destino;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        Trecho o = (Trecho) obj;
+        return this.getCidDestino().equals(o.getCidDestino()) && this.getCidOrigem().equals(o.getCidOrigem());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + Objects.hashCode(this.origem);
+        hash = 79 * hash + Objects.hashCode(this.destino);
+        hash = 79 * hash + Objects.hashCode(this.companhia);
+        hash = 79 * hash + Objects.hashCode(this.passagem);
+        hash = 79 * hash + this.distancia;
+        return hash;
     }
     
     public String getCidOrigem() {

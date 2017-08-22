@@ -60,7 +60,6 @@ public class Passagem implements Serializable{
     }
     
     public void trechoResevado(Trecho tc){
-        this.trechoParaComprar.remove(tc);
         this.trechoComprados.add(tc);
     }
     

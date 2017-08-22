@@ -32,6 +32,6 @@ public class ControllerClient {
     }
     
     public Passagem comprarPassagem(Stack<Vertice> pilha) throws RemoteException{
-        return this.servidor.comprarTrechos(pilha);
+         return this.servidor.comprarTrechos(pilha);
     }
 }

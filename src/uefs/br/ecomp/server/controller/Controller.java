@@ -244,8 +244,7 @@ public class Controller extends UnicastRemoteObject implements IController {
     public Passagem comprarTrechos(Stack<Vertice> pilha) throws RemoteException {
         List<Trecho> tc = obterTrechos(pilha); //Converte a pilha de vertices em trechos;
         Passagem pas = new Passagem("Comprador", tc);
-        if(trechoLocal(tc)){
-            
+        if (trechoLocal(tc)) {
             comprarTrechoServer(pas);
         }
         for (IController servidor : this.servidores) {
@@ -255,33 +254,25 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     private List<Trecho> obterTrechos(Stack<Vertice> pilha) {
-        System.out.println("TAMANHO PILHA: "+pilha.size());
+        System.out.println("TAMANHO PILHA: " + pilha.size());
         List<Trecho> tc = new ArrayList<>();
         Vertice[] v = pilhaParaVetor(pilha);
         int i = 0, j = i + 1;
-        Aresta obj;
-        
-        for (int k = 0; k < v.length-1; k++) {
-            System.out.println("uefs.br.ecomp.server.controller.Controller.obterTrechos()");
-            System.err.println("NOMES: "+ v[i].getNome()+ v[j].getNome());
-            obj = this.grafo.buscarAresta(v[i], v[j]);
-            System.out.println("Aresta e igual a: "+obj);
-            if (obj != null) {
-                System.out.println("Entrou");
-                Trecho trecho = new Trecho(obj.getOrigem().getNome(), obj.getDestino().getNome(), "");
-                tc.add(trecho);
-            }
+
+        for (int k = 0; k < v.length - 1; k++) {
+            Trecho trecho = new Trecho(v[i].getNome(), v[j].getNome(), "");
+            tc.add(trecho);
             i++;
             j++;
         }
-        System.err.println("Trecho:"+ tc.size());
+        System.err.println("Trecho:" + tc.size());
         return tc;
     }
-    
-    private Vertice[] pilhaParaVetor(Stack<Vertice> pilha){
+
+    private Vertice[] pilhaParaVetor(Stack<Vertice> pilha) {
         int tamanho = pilha.size();
         Vertice[] v = new Vertice[tamanho];
-        for (int i = tamanho-1; i >= 0; i--) {
+        for (int i = tamanho - 1; i >= 0; i--) {
             v[i] = pilha.pop();
         }
         return v;
@@ -289,7 +280,7 @@ public class Controller extends UnicastRemoteObject implements IController {
 
     private boolean trechoLocal(List<Trecho> la) {
         for (Trecho trecho : la) {
-            System.out.println("Trecho Local: "+trecho);
+            System.out.println("Trecho Local: " + trecho);
             if (this.trechos.contains(trecho)) {
                 System.err.println("Eu Contenho o trecho");
                 return true;
@@ -304,13 +295,18 @@ public class Controller extends UnicastRemoteObject implements IController {
         int index;
         Trecho tc;
         for (Trecho trecho : la) {
-            index = this.trechos.indexOf(la);
-            if (index > -1) {
-                tc = this.trechos.get(index);
-                tc.resevarTrecho(ps);
-                ps.trechoResevado(tc);
+            for (Trecho trechoLocal : this.trechos) {
+                if (trechoLocal.equals(trecho)) {
+                    trechoLocal.resevarTrecho(ps);
+                    ps.trechoResevado(trecho);
+                }
             }
         }
+        List<Trecho> lc = ps.getTrechoComprados();
+        for (Trecho trecho : lc) {
+            la.remove(trecho);
+        }
+
         return true;
     }
 
