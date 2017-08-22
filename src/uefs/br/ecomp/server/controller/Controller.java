@@ -245,6 +245,7 @@ public class Controller extends UnicastRemoteObject implements IController {
         List<Trecho> tc = obterTrechos(pilha); //Converte a pilha de vertices em trechos;
         Passagem pas = new Passagem("Comprador", tc);
         if(trechoLocal(tc)){
+            
             comprarTrechoServer(pas);
         }
         for (IController servidor : this.servidores) {
@@ -254,26 +255,33 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     private List<Trecho> obterTrechos(Stack<Vertice> pilha) {
+        System.out.println("TAMANHO PILHA: "+pilha.size());
         List<Trecho> tc = new ArrayList<>();
         Vertice[] v = pilhaParaVetor(pilha);
         int i = 0, j = i + 1;
         Aresta obj;
-        for (int k = 0; k < v.length; k++) {
+        
+        for (int k = 0; k < v.length-1; k++) {
+            System.out.println("uefs.br.ecomp.server.controller.Controller.obterTrechos()");
+            System.err.println("NOMES: "+ v[i].getNome()+ v[j].getNome());
             obj = this.grafo.buscarAresta(v[i], v[j]);
+            System.out.println("Aresta e igual a: "+obj);
             if (obj != null) {
+                System.out.println("Entrou");
                 Trecho trecho = new Trecho(obj.getOrigem().getNome(), obj.getDestino().getNome(), "");
                 tc.add(trecho);
             }
             i++;
             j++;
         }
+        System.err.println("Trecho:"+ tc.size());
         return tc;
     }
     
     private Vertice[] pilhaParaVetor(Stack<Vertice> pilha){
         int tamanho = pilha.size();
         Vertice[] v = new Vertice[tamanho];
-        for (int i = 0; i < tamanho; i++) {
+        for (int i = tamanho-1; i >= 0; i--) {
             v[i] = pilha.pop();
         }
         return v;
@@ -281,7 +289,9 @@ public class Controller extends UnicastRemoteObject implements IController {
 
     private boolean trechoLocal(List<Trecho> la) {
         for (Trecho trecho : la) {
+            System.out.println("Trecho Local: "+trecho);
             if (this.trechos.contains(trecho)) {
+                System.err.println("Eu Contenho o trecho");
                 return true;
             }
         }

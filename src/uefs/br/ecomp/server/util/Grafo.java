@@ -221,16 +221,19 @@ public class Grafo implements IGrafo {
      * @param origem
      * @param destino
      * @return a Aresta
-     * @throws DadoInexistenteException
      */
     @Override
     public Aresta buscarAresta(Vertice origem, Vertice destino) {
         Iterator<Aresta> it = this.listarArestas();
-
+        System.out.println("Tamanho das Arestas: "+ this.listaAresta.size());
+        
         while (it.hasNext()) {
             Aresta a = it.next();
+            System.out.println("Origens: " +a.getOrigem().getNome() + origem.getNome());
+            System.out.println("Destinos: " +a.getDestino().getNome() + destino.getNome());
 
-            if ((origem.equals(a.getOrigem())) && (destino.equals(a.getDestino()))) {
+            if ((origem.getNome().equals(a.getOrigem().getNome())) && (destino.getNome().equals(a.getDestino().getNome()))) {
+                System.out.println("Encontrou a Aresta");
                 return a;
             }
         }

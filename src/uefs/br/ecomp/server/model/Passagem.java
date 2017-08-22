@@ -15,6 +15,13 @@ import java.util.Stack;
  * @author marcos
  */
 public class Passagem implements Serializable{
+
+    /**
+     * @return the trechoComprados
+     */
+    public List<Trecho> getTrechoComprados() {
+        return trechoComprados;
+    }
     private int id;
     private String nomeComprador;
     private List<Trecho> trechoParaComprar;
