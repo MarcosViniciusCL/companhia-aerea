@@ -157,6 +157,7 @@ public class Controller extends UnicastRemoteObject implements IController {
             Naming.bind(nomeServico, c);
             System.out.println("serviço \"" + nomeServico + "\" iniciado.");
         } catch (RemoteException | MalformedURLException | AlreadyBoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Não foi possivel iniciar.");
         }
     }
@@ -175,7 +176,7 @@ public class Controller extends UnicastRemoteObject implements IController {
             gerarGrafo();
             return this.grafo.buscarCaminhos(origem, destino);
         } catch (DadoInexistenteException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Não há trechos para a rota.");
         }
         return null;
     }
@@ -254,7 +255,6 @@ public class Controller extends UnicastRemoteObject implements IController {
     }
 
     private List<Trecho> obterTrechos(Stack<Vertice> pilha) {
-        System.out.println("TAMANHO PILHA: " + pilha.size());
         List<Trecho> tc = new ArrayList<>();
         Vertice[] v = pilhaParaVetor(pilha);
         int i = 0, j = i + 1;
@@ -265,7 +265,6 @@ public class Controller extends UnicastRemoteObject implements IController {
             i++;
             j++;
         }
-        System.err.println("Trecho:" + tc.size());
         return tc;
     }
 
@@ -280,9 +279,7 @@ public class Controller extends UnicastRemoteObject implements IController {
 
     private boolean trechoLocal(List<Trecho> la) {
         for (Trecho trecho : la) {
-            System.out.println("Trecho Local: " + trecho);
             if (this.trechos.contains(trecho)) {
-                System.err.println("Eu Contenho o trecho");
                 return true;
             }
         }
@@ -305,7 +302,9 @@ public class Controller extends UnicastRemoteObject implements IController {
         List<Trecho> lc = ps.getTrechoComprados();
         for (Trecho trecho : lc) {
             la.remove(trecho);
+            this.trechos.remove(trecho);
         }
+        
 
         return true;
     }
